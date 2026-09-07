@@ -8,8 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    // 127.0.0.1:8000 works seamlessly on real devices via USB with 'adb reverse tcp:8000 tcp:8000'
-    var baseUrl: String = "http://127.0.0.1:8000/api/"
+    // Live production cloud serverless backend on Vercel
+    var baseUrl: String = "https://myscratch-prod.vercel.app/api/"
 
     private var apiService: MyScratchApiService? = null
 
