@@ -1,0 +1,38 @@
+﻿# Root GitIgnore for MyScratch Monorepo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Android (FRONTEND)
+FRONTEND/.gradle/
+FRONTEND/build/
+FRONTEND/*/build/
+FRONTEND/app/build/
+FRONTEND/local.properties
+FRONTEND/.idea/
+FRONTEND/*.iml
+FRONTEND/*/*.iml
+FRONTEND/.cxx/
+*.apk
+
+# Laravel (BACKEND)
+BACKEND/vendor/
+BACKEND/node_modules/
+BACKEND/npm-debug.log
+BACKEND/yarn-error.log
+BACKEND/.env
+BACKEND/.env.backup
+BACKEND/.env.production
+BACKEND/.phpunit.result.cache
+BACKEND/storage/*.key
+BACKEND/storage/logs/*.log
+BACKEND/storage/framework/cache/data/*
+BACKEND/storage/framework/sessions/*
+BACKEND/storage/framework/testing/*
+BACKEND/storage/framework/views/*
+!BACKEND/storage/framework/cache/.gitignore
+!BACKEND/storage/framework/sessions/.gitignore
+!BACKEND/storage/framework/testing/.gitignore
+!BACKEND/storage/framework/views/.gitignore
+!BACKEND/storage/logs/.gitignore

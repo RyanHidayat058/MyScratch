@@ -1,0 +1,34 @@
+*.iml
+.gradle
+.kotlin/
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+
+# Built-in app outputs
+app/build/
+
+# Firebase & Secret configs
+google-services.json
+app/google-services.json
+!app/google-services.json.example
+
+# Exclude AI / Agent artifacts
+.agent
+.agent/
+.gemini
+.gemini/
+.antigravity
+.antigravity/
