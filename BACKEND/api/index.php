@@ -79,19 +79,6 @@ try {
 
     $request = \Illuminate\Http\Request::capture();
     $response = $app->handle($request);
-
-    if ($response->getStatusCode() === 500 && isset($response->exception)) {
-        header('Content-Type: application/json');
-        echo json_encode([
-            'status' => 500,
-            'exception' => $response->exception->getMessage(),
-            'class' => get_class($response->exception),
-            'file' => $response->exception->getFile(),
-            'line' => $response->exception->getLine(),
-        ], JSON_PRETTY_PRINT);
-        exit;
-    }
-
     $response->send();
     $app->terminate();
 } catch (\Throwable $e) {
