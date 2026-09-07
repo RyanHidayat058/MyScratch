@@ -471,7 +471,7 @@ The backend includes native Vercel serverless integration via `vercel-php`:
 
 ## Security Disclosure
 
-If you discover any security vulnerabilities or cryptographic flaws within MyScratch, please send an advisory email directly to **[ryan.hidayat058@gmail.com](mailto:ryan.hidayat058@gmail.com)** or open a confidential issue on GitHub. All security advisories are addressed promptly.
+If you discover any security vulnerabilities or cryptographic flaws within MyScratch, please send an advisory email directly to **[ryan86877@gmail.com](mailto:ryan86877@gmail.com)** or open a confidential issue on GitHub. All security advisories are addressed promptly.
 
 ---
 
