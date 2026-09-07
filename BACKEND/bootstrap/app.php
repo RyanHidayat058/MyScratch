@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withProviders([
+        \Illuminate\Filesystem\FilesystemServiceProvider::class,
         \Illuminate\View\ViewServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
