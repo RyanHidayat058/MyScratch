@@ -1,6 +1,5 @@
 <?php
 ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
 try {
@@ -22,8 +21,22 @@ try {
         }
     }
 
-    require __DIR__ . '/../public/index.php';
+    define('LARAVEL_START', microtime(true));
+    require __DIR__.'/../vendor/autoload.php';
+    $app = require_once __DIR__.'/../bootstrap/app.php';
+    $app->register(\Illuminate\View\ViewServiceProvider::class);
+
+    $request = \Illuminate\Http\Request::capture();
+    $response = $app->handle($request);
+    $response->send();
+    $app->terminate();
 } catch (\Throwable $e) {
     http_response_code(500);
-    echo "SERVERLESS_ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString();
+    header('Content-Type: application/json');
+    echo json_encode([
+        'error' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => explode("\n", $e->getTraceAsString())
+    ], JSON_PRETTY_PRINT);
 }
