@@ -1,0 +1,1 @@
+<?php echo "HELLO_FROM_VERCEL_PHP_" . PHP_VERSION;
