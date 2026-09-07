@@ -23,5 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn () => true,
         );
+        $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, \Throwable $e, Request $request) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'class' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 500);
+        });
     })->create()
     ->useStoragePath(isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) ? '/tmp/storage' : dirname(__DIR__).'/storage');
