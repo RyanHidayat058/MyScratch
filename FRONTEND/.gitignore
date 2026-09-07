@@ -20,10 +20,8 @@
 # Built-in app outputs
 app/build/
 
-# Firebase & Secret configs
-google-services.json
-app/google-services.json
-!app/google-services.json.example
+# Secret configs
+local.properties
 
 # Exclude AI / Agent artifacts
 .agent

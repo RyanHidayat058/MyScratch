@@ -1,58 +1,165 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MyScratch - Backend RESTful API Service
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="../logo.png" alt="MyScratch Logo" width="96" height="96" style="border-radius: 18px;" />
 </p>
 
-## About Laravel
+<p align="center">
+  <strong>Secure, High-Performance Laravel 11 Microservice with Database-Level AES-256 Encryption</strong>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-11.x-FF2D20.svg?style=flat-square&logo=laravel" alt="Laravel 11" />
+  <img src="https://img.shields.io/badge/PHP-8.3+-777BB4.svg?style=flat-square&logo=php" alt="PHP 8.3" />
+  <img src="https://img.shields.io/badge/Auth-Sanctum-red.svg?style=flat-square" alt="Sanctum" />
+  <img src="https://img.shields.io/badge/Security-AES--256--CBC-059669.svg?style=flat-square" alt="AES-256" />
+  <img src="https://img.shields.io/badge/Serverless-Vercel-black.svg?style=flat-square&logo=vercel" alt="Vercel" />
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Overview
 
-## Learning Laravel
+The MyScratch Backend is a privacy-first RESTful API designed to serve the MyScratch Android client. It handles authentication, data synchronization, cryptographic hashing, and automated transactional OTP delivery.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Core Architectural Pillars
+1. **Zero-Trust Attribute Encryption**: Highly sensitive fields (`notes.title`, `notes.content`, `folders.name`, `transactions.title`, `transactions.note`) are encrypted at rest using Laravel's native AES-256-CBC encryption casts before storing to disk.
+2. **Stateless Token Authentication**: Authentication is handled via Laravel Sanctum, issuing lightweight, revokable SHA-256 hashed bearer tokens.
+3. **Automated OTP Engine**: 6-digit one-time passwords for registration, password recovery, and email transfers with strict 5-minute expiration windows.
+4. **Cloud and Serverless Ready**: Configured for instant deployment via Docker container or Vercel serverless functions (`vercel-php`).
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Tech Stack & Requirements
 
-## Agentic Development
+- **Framework**: Laravel 11.x
+- **Runtime**: PHP 8.3+
+- **Extensions**: `pdo_mysql`, `openssl`, `mbstring`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`, `curl`
+- **Authentication**: Laravel Sanctum
+- **Database**: MySQL 8.0+ or SQLite 3.35+
+- **Mailing**: SMTP (TLS/SSL) with custom responsive HTML mailable
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
+## Local Development Setup
+
+### 1. Install Dependencies
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install --optimize-autoloader
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Configure Environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Contributing
+### 3. Database Configuration
+Update `.env` with your database credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=myscratch
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. SMTP Mail Configuration (For OTP)
+Configure your mail gateway to receive real OTP verification emails:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="no-reply@myscratch.app"
+MAIL_FROM_NAME="MyScratch Security"
+```
+> Note: For local testing without an SMTP server, you can set `MAIL_MAILER=log` to inspect generated OTP codes in `storage/logs/laravel.log`.
 
-## Code of Conduct
+### 5. Run Migrations
+```bash
+php artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 6. Serve Application
+```bash
+php artisan serve --port=8000
+```
+API endpoints are exposed under `http://localhost:8000/api/`.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## API Endpoint Directory
+
+### Authentication & Account Security (`/api/auth`)
+- `POST /api/auth/register-request` — Request email verification code for new accounts.
+- `POST /api/auth/verify-register-otp` — Verify 6-digit OTP and complete account creation.
+- `POST /api/auth/resend-register-otp` — Regenerate and resend expired or missing OTP.
+- `POST /api/auth/login` — Authenticate and receive Sanctum bearer token.
+- `POST /api/auth/logout` — Revoke caller's active bearer token (Auth Required).
+
+### Profile & Identity Operations (`/api/user`)
+- `GET /api/user/profile` — Fetch current user details (Auth Required).
+- `POST /api/user/change-password-request` — Send password reset OTP (Auth Required).
+- `POST /api/user/change-password-verify` — Verify OTP and commit new password (Auth Required).
+- `POST /api/user/change-email-request` — Send migration OTP to new email (Auth Required).
+- `POST /api/user/change-email-verify` — Verify OTP and commit new email (Auth Required).
+- `DELETE /api/user/delete-account` — GDPR permanent erasure of user and associated data (Auth Required).
+
+### Personal Finance Management (`/api/finance`)
+- `GET /api/finance/summary` — Aggregate metrics: Total Balance, Net Worth, Income/Expense, Chart Data (Auth Required).
+- `GET /api/finance/transactions` — Query transactions with optional filters (`type`, `category`, `search`) (Auth Required).
+- `POST /api/finance/transactions` — Store transaction (title & note encrypted with AES-256) (Auth Required).
+- `PUT /api/finance/transactions/{id}` — Update existing transaction (Auth Required).
+- `DELETE /api/finance/transactions/{id}` — Delete transaction record (Auth Required).
+
+### Encrypted Notes & Folders (`/api/notes`)
+- `GET /api/notes/folders` — List folders with real-time note counts (Auth Required).
+- `POST /api/notes/folders` — Create folder with custom color HEX (Auth Required).
+- `DELETE /api/notes/folders/{id}` — Delete folder (Auth Required).
+- `GET /api/notes` — List notes with search/folder filtering (Auth Required).
+- `POST /api/notes` — Store note (title & content encrypted with AES-256) (Auth Required).
+- `PUT /api/notes/{id}` — Update note (Auth Required).
+- `DELETE /api/notes/{id}` — Delete note (Auth Required).
+
+---
+
+## Docker Deployment
+
+A production-ready Dockerfile is included:
+
+```bash
+# Build the container
+docker build -t myscratch-backend .
+
+# Run container with SQLite fallback
+docker run -d \
+  -p 8000:8000 \
+  --name myscratch-api \
+  -e APP_KEY=base64:YOUR_GENERATED_APP_KEY \
+  -e DB_CONNECTION=sqlite \
+  myscratch-backend
+```
+
+---
+
+## Vercel Serverless Deployment
+
+This repository includes `vercel.json` and `/api/index.php` for seamless deployment to Vercel:
+
+1. Install Vercel CLI: `npm i -g vercel`
+2. Deploy:
+   ```bash
+   cd BACKEND
+   vercel --prod
+   ```
+3. Add environment secrets via the Vercel Dashboard.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Developed by Ryan Hidayat. Distributed under the **MIT License**.

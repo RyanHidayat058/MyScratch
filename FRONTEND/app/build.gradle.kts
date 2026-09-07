@@ -5,10 +5,6 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
 }
 
-if (file("google-services.json").exists()) {
-    apply(plugin = "com.google.gms.google-services")
-}
-
 android {
     namespace = "com.myscratch.app"
     compileSdk = 34
@@ -88,10 +84,7 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.google.gson)
 
-    // Firebase & Auth
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.firestore.ktx)
+    // Google Sign-In
     implementation(libs.play.services.auth)
 
     // Testing
