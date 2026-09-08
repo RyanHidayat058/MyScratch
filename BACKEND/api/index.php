@@ -61,6 +61,11 @@ try {
         'MAIL_FROM_NAME' => 'MyScratch',
         'SESSION_DRIVER' => 'array',
         'CACHE_STORE' => 'array',
+        'APP_LATEST_VERSION_CODE' => '2',
+        'APP_LATEST_VERSION_NAME' => '1.1.0',
+        'APP_DOWNLOAD_URL' => 'https://drive.google.com/drive/folders/1msxhpA8_9T-bggV9InePLtbrgxpXIqzj?usp=sharing',
+        'APP_CHANGELOG' => "- Modul baru Brankas Rahasia (Enkripsi AES-256)\n- Kunci Biometrik sidik jari per catatan penting\n- Kotak Sampah (Recycle Bin / Soft Delete)\n- Mode Checklist / To-Do list interaktif di editor",
+        'APP_FORCE_UPDATE' => 'false',
     ];
 
     foreach ($defaults as $key => $val) {
