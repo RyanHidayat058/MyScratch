@@ -69,7 +69,7 @@ try {
     ];
 
     foreach ($defaults as $key => $val) {
-        if (!getenv($key) && !isset($_ENV[$key]) && !isset($_SERVER[$key])) {
+        if (!getenv($key) || getenv($key) === '') {
             putenv("{$key}={$val}");
             $_ENV[$key] = $val;
             $_SERVER[$key] = $val;
