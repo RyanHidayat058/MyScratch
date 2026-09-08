@@ -17,8 +17,10 @@ import java.util.UUID
 data class NotesUiState(
     val folders: List<Folder> = emptyList(),
     val notes: List<Note> = emptyList(),
+    val trashedNotes: List<Note> = emptyList(),
     val selectedFolderId: String? = null,
     val searchQuery: String = "",
+    val isTrashView: Boolean = false,
     val isLoading: Boolean = false
 )
 
@@ -29,39 +31,65 @@ class NotesViewModel(
 
     private val _selectedFolderId = MutableStateFlow<String?>(null)
     private val _searchQuery = MutableStateFlow("")
+    private val _isTrashView = MutableStateFlow(false)
+
+    private val _filterState = combine(_selectedFolderId, _searchQuery, _isTrashView) { folderId, query, isTrash ->
+        Triple(folderId, query, isTrash)
+    }
 
     val uiState: StateFlow<NotesUiState> = combine(
         notesRepository.getFolders(userId),
         notesRepository.getNotes(userId),
-        _selectedFolderId,
-        _searchQuery
-    ) { folders, notes, selectedFolderId, query ->
-        val filteredByFolder = if (selectedFolderId != null) {
+        notesRepository.getTrashedNotes(userId),
+        _filterState
+    ) { folders, notes, trashedNotes, (selectedFolderId, query, isTrashView) ->
+        val activeNotes = if (selectedFolderId != null) {
             notes.filter { it.folderId == selectedFolderId }
         } else {
             notes
         }
 
         val filteredNotes = if (query.isNotBlank()) {
-            filteredByFolder.filter {
+            activeNotes.filter {
                 it.title.contains(query, ignoreCase = true) ||
                         it.content.contains(query, ignoreCase = true)
             }
         } else {
-            filteredByFolder
+            activeNotes
+        }
+
+        val filteredTrashedNotes = if (query.isNotBlank()) {
+            trashedNotes.filter {
+                it.title.contains(query, ignoreCase = true) ||
+                        it.content.contains(query, ignoreCase = true)
+            }
+        } else {
+            trashedNotes
         }
 
         NotesUiState(
             folders = folders,
             notes = filteredNotes,
+            trashedNotes = filteredTrashedNotes,
             selectedFolderId = selectedFolderId,
-            searchQuery = query
+            searchQuery = query,
+            isTrashView = isTrashView
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = NotesUiState()
     )
+
+    init {
+        refresh()
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            notesRepository.refreshNotesAndFolders(userId)
+        }
+    }
 
     fun selectFolder(folderId: String?) {
         _selectedFolderId.value = folderId
@@ -93,10 +121,15 @@ class NotesViewModel(
         }
     }
 
+    fun toggleTrashView(showTrash: Boolean) {
+        _isTrashView.value = showTrash
+    }
+
     fun addNote(
         folderId: String,
         title: String,
         content: String,
+        isLocked: Boolean = false,
         onSuccess: () -> Unit = {}
     ) {
         viewModelScope.launch {
@@ -105,7 +138,8 @@ class NotesViewModel(
                 userId = userId,
                 folderId = folderId,
                 title = title,
-                content = content
+                content = content,
+                isLocked = isLocked
             )
             notesRepository.insertNote(note)
             onSuccess()
@@ -124,7 +158,25 @@ class NotesViewModel(
 
     fun deleteNote(noteId: String) {
         viewModelScope.launch {
-            notesRepository.deleteNote(noteId)
+            notesRepository.softDeleteNote(noteId)
+        }
+    }
+
+    fun restoreNote(noteId: String) {
+        viewModelScope.launch {
+            notesRepository.restoreNote(noteId)
+        }
+    }
+
+    fun permanentlyDeleteNote(noteId: String) {
+        viewModelScope.launch {
+            notesRepository.permanentlyDeleteNote(noteId)
+        }
+    }
+
+    fun emptyTrash() {
+        viewModelScope.launch {
+            notesRepository.emptyTrash(userId)
         }
     }
 

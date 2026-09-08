@@ -57,20 +57,69 @@ import com.myscratch.app.ui.components.formatRupiah
 import com.myscratch.app.ui.theme.AppColors
 import com.myscratch.app.ui.theme.LocalThemeState
 import com.myscratch.app.viewmodel.FinanceViewModel
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.Lock
+import com.myscratch.app.ui.components.BiometricHelper
+
+import androidx.compose.runtime.LaunchedEffect
+import com.myscratch.app.BuildConfig
+import com.myscratch.app.MyScratchApp
+import com.myscratch.app.data.network.ApiClient
+import com.myscratch.app.data.network.dto.AppUpdateDto
+import com.myscratch.app.ui.components.AppUpdateDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+import com.myscratch.app.viewmodel.NotesViewModel
+import com.myscratch.app.viewmodel.VaultViewModel
 
 @Composable
 fun HomeScreen(
     user: User,
     financeViewModel: FinanceViewModel,
+    notesViewModel: NotesViewModel? = null,
+    vaultViewModel: VaultViewModel? = null,
     onNavigateToFinance: () -> Unit,
     onNavigateToNotes: () -> Unit,
+    onNavigateToVault: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onOpenCalculator: () -> Unit,
     onLogout: () -> Unit,
     isTablet: Boolean = false
 ) {
+    val context = LocalContext.current
     val themeState = LocalThemeState.current
     var isLogoutDialogOpen by remember { mutableStateOf(false) }
+    var availableUpdate by remember { mutableStateOf<AppUpdateDto?>(null) }
+
+    LaunchedEffect(Unit) {
+        // Auto-sync data dari cloud backend saat masuk Home
+        financeViewModel.refresh()
+        notesViewModel?.refresh()
+        vaultViewModel?.refreshItems()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val res = ApiClient.getService(MyScratchApp.instance.tokenManager).checkAppUpdate()
+                if (res.isSuccessful && res.body() != null) {
+                    val update = res.body()!!
+                    if (update.latestVersionCode > BuildConfig.VERSION_CODE) {
+                        withContext(Dispatchers.Main) {
+                            availableUpdate = update
+                        }
+                    }
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    if (availableUpdate != null) {
+        AppUpdateDialog(
+            updateInfo = availableUpdate!!,
+            onDismissRequest = { availableUpdate = null }
+        )
+    }
 
     if (isLogoutDialogOpen) {
         AlertDialog(
@@ -297,6 +346,30 @@ fun HomeScreen(
                     badgeText = "Aktif",
                     badgeColor = AppColors.azure,
                     onClick = onNavigateToNotes
+                )
+            }
+
+            // Feature 3: Brankas Rahasia (Secure Vault)
+            item {
+                FeatureGridCard(
+                    title = "Brankas Rahasia",
+                    subtitle = "Simpan password, PIN kartu, rekening, dan data rahasia terenkripsi",
+                    icon = Icons.Default.Lock,
+                    iconTint = AppColors.violet,
+                    iconBg = AppColors.violetBg,
+                    badgeText = "Terenkripsi",
+                    badgeColor = AppColors.violet,
+                    onClick = {
+                        BiometricHelper.authenticate(
+                            context = context,
+                            title = "Akses Brankas Rahasia",
+                            subtitle = "Autentikasi sidik jari atau PIN perangkat Anda untuk membuka brankas",
+                            onSuccess = onNavigateToVault,
+                            onError = { err ->
+                                Toast.makeText(context, err, Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
                 )
             }
         }

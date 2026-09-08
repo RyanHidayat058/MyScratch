@@ -32,7 +32,9 @@ data class NoteRequestDto(
     @SerializedName("folder_id")
     val folderId: Any? = null,
     @SerializedName("is_pinned")
-    val isPinned: Boolean? = false
+    val isPinned: Boolean? = false,
+    @SerializedName("is_locked")
+    val isLocked: Boolean? = false
 )
 
 data class NoteDto(
@@ -43,6 +45,8 @@ data class NoteDto(
     val content: String,
     @SerializedName("is_pinned")
     val isPinned: Boolean = false,
+    @SerializedName("is_locked")
+    val isLocked: Boolean = false,
     @SerializedName("created_at")
     val createdAt: String? = null,
     @SerializedName("updated_at")

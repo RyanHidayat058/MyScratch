@@ -26,9 +26,11 @@ import com.myscratch.app.ui.home.HomeScreen
 import com.myscratch.app.ui.notes.NoteEditorScreen
 import com.myscratch.app.ui.notes.NotesMainScreen
 import com.myscratch.app.ui.profile.ProfileScreen
+import com.myscratch.app.ui.vault.VaultScreen
 import com.myscratch.app.viewmodel.AuthViewModel
 import com.myscratch.app.viewmodel.FinanceViewModel
 import com.myscratch.app.viewmodel.NotesViewModel
+import com.myscratch.app.viewmodel.VaultViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -85,6 +87,14 @@ fun AppNavGraph(
         key = "notes_$activeUserId",
         factory = NotesViewModel.provideFactory(
             MyScratchApp.instance.notesRepository,
+            activeUserId
+        )
+    )
+
+    val vaultViewModel: VaultViewModel = viewModel(
+        key = "vault_$activeUserId",
+        factory = VaultViewModel.provideFactory(
+            MyScratchApp.instance.vaultRepository,
             activeUserId
         )
     )
@@ -171,11 +181,16 @@ fun AppNavGraph(
                 HomeScreen(
                     user = currentUser,
                     financeViewModel = financeViewModel,
+                    notesViewModel = notesViewModel,
+                    vaultViewModel = vaultViewModel,
                     onNavigateToFinance = {
                         navController.navigate(Screen.Finance.route)
                     },
                     onNavigateToNotes = {
                         navController.navigate(Screen.Notes.route)
+                    },
+                    onNavigateToVault = {
+                        navController.navigate(Screen.Vault.route)
                     },
                     onNavigateToProfile = {
                         navController.navigate(Screen.Profile.route)
@@ -255,6 +270,18 @@ fun AppNavGraph(
                 folderId = folderId,
                 notesViewModel = notesViewModel,
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Vault.route) {
+            VaultScreen(
+                vaultViewModel = vaultViewModel,
+                onNavigateBack = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = false }
+                    }
+                },
+                isTablet = isTablet
             )
         }
     }

@@ -12,6 +12,9 @@ data class NoteEntity(
     val folderId: String,
     val title: String,
     val content: String,
+    val isLocked: Boolean = false,
+    val isDeleted: Boolean = false,
+    val deletedAt: Long? = null,
     val updatedAt: Long,
     val createdAt: Long
 ) {
@@ -21,6 +24,9 @@ data class NoteEntity(
         folderId = folderId,
         title = title,
         content = content,
+        isLocked = isLocked,
+        isDeleted = isDeleted,
+        deletedAt = deletedAt,
         updatedAt = updatedAt,
         createdAt = createdAt
     )
@@ -32,6 +38,9 @@ data class NoteEntity(
             folderId = note.folderId,
             title = note.title,
             content = note.content,
+            isLocked = note.isLocked,
+            isDeleted = note.isDeleted,
+            deletedAt = note.deletedAt,
             updatedAt = note.updatedAt,
             createdAt = note.createdAt
         )

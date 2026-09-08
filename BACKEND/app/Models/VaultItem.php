@@ -5,33 +5,30 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Note extends Model
+class VaultItem extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
         'user_id',
-        'folder_id',
+        'category',
         'title',
-        'content',
-        'is_pinned',
-        'is_locked',
+        'username',
+        'password',
+        'extra_data',
+        'notes',
     ];
 
     protected $casts = [
         'title' => 'encrypted',
-        'content' => 'encrypted',
-        'is_pinned' => 'boolean',
-        'is_locked' => 'boolean',
+        'username' => 'encrypted',
+        'password' => 'encrypted',
+        'extra_data' => 'encrypted',
+        'notes' => 'encrypted',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function folder()
-    {
-        return $this->belongsTo(Folder::class);
     }
 }

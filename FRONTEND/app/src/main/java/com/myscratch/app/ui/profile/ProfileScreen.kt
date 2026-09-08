@@ -33,6 +33,15 @@ import com.myscratch.app.ui.components.ClassyCard
 import com.myscratch.app.ui.components.ClassyTextField
 import com.myscratch.app.ui.theme.AppColors
 import com.myscratch.app.viewmodel.AuthViewModel
+import com.myscratch.app.BuildConfig
+import com.myscratch.app.MyScratchApp
+import com.myscratch.app.data.network.ApiClient
+import com.myscratch.app.data.network.dto.AppUpdateDto
+import com.myscratch.app.ui.components.AppUpdateDialog
+import androidx.compose.material.icons.filled.SystemUpdate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun ProfileScreen(
@@ -42,7 +51,11 @@ fun ProfileScreen(
     onLogoutSuccess: () -> Unit
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val uiState by authViewModel.uiState.collectAsState()
+
+    var availableUpdate by remember { mutableStateOf<AppUpdateDto?>(null) }
+    var isCheckingUpdate by remember { mutableStateOf(false) }
 
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var showChangeEmailDialog by remember { mutableStateOf(false) }
@@ -460,6 +473,41 @@ fun ProfileScreen(
                 Divider(color = AppColors.border, thickness = 0.5.dp, modifier = Modifier.padding(horizontal = 12.dp))
 
                 ProfileOptionRow(
+                    icon = Icons.Default.SystemUpdate,
+                    iconTint = AppColors.violet,
+                    title = "Pembaruan Aplikasi",
+                    subtitle = if (isCheckingUpdate) "Memeriksa versi..." else "Versi saat ini v${BuildConfig.VERSION_NAME}",
+                    onClick = {
+                        if (!isCheckingUpdate) {
+                            isCheckingUpdate = true
+                            coroutineScope.launch {
+                                try {
+                                    val res = withContext(Dispatchers.IO) {
+                                        ApiClient.getService(MyScratchApp.instance.tokenManager).checkAppUpdate()
+                                    }
+                                    if (res.isSuccessful && res.body() != null) {
+                                        val update = res.body()!!
+                                        if (update.latestVersionCode > BuildConfig.VERSION_CODE) {
+                                            availableUpdate = update
+                                        } else {
+                                            Toast.makeText(context, "Aplikasi Anda sudah versi terbaru (v${BuildConfig.VERSION_NAME}) 🎉", Toast.LENGTH_SHORT).show()
+                                        }
+                                    } else {
+                                        Toast.makeText(context, "Gagal memeriksa pembaruan server.", Toast.LENGTH_SHORT).show()
+                                    }
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Tidak dapat terhubung ke server pembaruan.", Toast.LENGTH_SHORT).show()
+                                } finally {
+                                    isCheckingUpdate = false
+                                }
+                            }
+                        }
+                    }
+                )
+
+                Divider(color = AppColors.border, thickness = 0.5.dp, modifier = Modifier.padding(horizontal = 12.dp))
+
+                ProfileOptionRow(
                     icon = Icons.AutoMirrored.Filled.Logout,
                     iconTint = AppColors.textMuted,
                     title = "Keluar dari Akun",
@@ -481,6 +529,13 @@ fun ProfileScreen(
         }
 
         Spacer(modifier = Modifier.height(36.dp))
+    }
+
+    if (availableUpdate != null) {
+        AppUpdateDialog(
+            updateInfo = availableUpdate!!,
+            onDismissRequest = { availableUpdate = null }
+        )
     }
 }
 

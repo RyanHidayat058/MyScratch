@@ -6,9 +6,11 @@ import com.myscratch.app.data.network.TokenManager
 import com.myscratch.app.data.repository.AuthRepositoryImpl
 import com.myscratch.app.data.repository.FinanceRepositoryImpl
 import com.myscratch.app.data.repository.NotesRepositoryImpl
+import com.myscratch.app.data.repository.VaultRepositoryImpl
 import com.myscratch.app.domain.repository.AuthRepository
 import com.myscratch.app.domain.repository.FinanceRepository
 import com.myscratch.app.domain.repository.NotesRepository
+import com.myscratch.app.domain.repository.VaultRepository
 
 class MyScratchApp : Application() {
 
@@ -27,6 +29,9 @@ class MyScratchApp : Application() {
     lateinit var notesRepository: NotesRepository
         private set
 
+    lateinit var vaultRepository: VaultRepository
+        private set
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -36,6 +41,7 @@ class MyScratchApp : Application() {
         authRepository = AuthRepositoryImpl(tokenManager)
         financeRepository = FinanceRepositoryImpl(database.transactionDao(), tokenManager)
         notesRepository = NotesRepositoryImpl(database.folderDao(), database.noteDao(), tokenManager)
+        vaultRepository = VaultRepositoryImpl(database.vaultDao(), tokenManager)
     }
 
     companion object {

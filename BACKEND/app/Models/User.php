@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Note::class);
     }
+
+    public function vaultItems()
+    {
+        return $this->hasMany(VaultItem::class);
+    }
 }

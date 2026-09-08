@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1000843060453",
+    "project_id": "myscratch-app-d9cb2",
+    "storage_bucket": "myscratch-app-d9cb2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000843060453:android:96afb2ffc2a644bfaba00c",
+        "android_client_info": {
+          "package_name": "com.myscratch.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000843060453-h2k4hhbv3u9vgnouqdqdc2mk79def3lp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myscratch.app",
+            "certificate_hash": "6cd94145d9a122e78056d1fb20efb923b8c4c1b9"
+          }
+        },
+        {
+          "client_id": "1000843060453-d7lp6p3vk29k9d6u25hgfoju32vnbk5c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB1rfr7Ug18s-AQL4FwS_rXeC7TJnbjxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000843060453-d7lp6p3vk29k9d6u25hgfoju32vnbk5c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

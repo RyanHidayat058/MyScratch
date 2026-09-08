@@ -8,19 +8,22 @@ import com.myscratch.app.data.local.dao.FolderDao
 import com.myscratch.app.data.local.dao.NoteDao
 import com.myscratch.app.data.local.dao.TransactionDao
 import com.myscratch.app.data.local.dao.UserDao
+import com.myscratch.app.data.local.dao.VaultDao
 import com.myscratch.app.data.local.entity.FolderEntity
 import com.myscratch.app.data.local.entity.NoteEntity
 import com.myscratch.app.data.local.entity.TransactionEntity
 import com.myscratch.app.data.local.entity.UserEntity
+import com.myscratch.app.data.local.entity.VaultItemEntity
 
 @Database(
     entities = [
         UserEntity::class,
         TransactionEntity::class,
         FolderEntity::class,
-        NoteEntity::class
+        NoteEntity::class,
+        VaultItemEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -28,6 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun folderDao(): FolderDao
     abstract fun noteDao(): NoteDao
+    abstract fun vaultDao(): VaultDao
 
     companion object {
         @Volatile

@@ -59,7 +59,7 @@ class NotesController extends Controller
     }
 
     /**
-     * Get Notes
+     * Get Active Notes
      */
     public function notes(Request $request)
     {
@@ -88,6 +88,19 @@ class NotesController extends Controller
     }
 
     /**
+     * Get Trashed Notes
+     */
+    public function trash(Request $request)
+    {
+        $trashedNotes = $request->user()->notes()->onlyTrashed()->orderBy('deleted_at', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'notes' => $trashedNotes,
+        ]);
+    }
+
+    /**
      * Create Note
      */
     public function storeNote(Request $request)
@@ -97,6 +110,7 @@ class NotesController extends Controller
             'content' => 'required|string',
             'folder_id' => 'nullable|exists:folders,id',
             'is_pinned' => 'nullable|boolean',
+            'is_locked' => 'nullable|boolean',
         ]);
 
         $note = $request->user()->notes()->create([
@@ -104,6 +118,7 @@ class NotesController extends Controller
             'content' => trim($request->content),
             'folder_id' => $request->folder_id,
             'is_pinned' => (bool) $request->is_pinned,
+            'is_locked' => (bool) $request->is_locked,
         ]);
 
         return response()->json([
@@ -125,6 +140,7 @@ class NotesController extends Controller
             'content' => 'required|string',
             'folder_id' => 'nullable|exists:folders,id',
             'is_pinned' => 'nullable|boolean',
+            'is_locked' => 'nullable|boolean',
         ]);
 
         $note->update([
@@ -132,6 +148,7 @@ class NotesController extends Controller
             'content' => trim($request->content),
             'folder_id' => $request->folder_id,
             'is_pinned' => $request->has('is_pinned') ? (bool) $request->is_pinned : $note->is_pinned,
+            'is_locked' => $request->has('is_locked') ? (bool) $request->is_locked : $note->is_locked,
         ]);
 
         return response()->json([
@@ -142,7 +159,7 @@ class NotesController extends Controller
     }
 
     /**
-     * Delete Note
+     * Soft Delete Note (Move to Trash)
      */
     public function deleteNote(Request $request, $id)
     {
@@ -151,7 +168,49 @@ class NotesController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Catatan berhasil dihapus.',
+            'message' => 'Catatan dipindahkan ke kotak sampah.',
+        ]);
+    }
+
+    /**
+     * Restore Note from Trash
+     */
+    public function restoreNote(Request $request, $id)
+    {
+        $note = $request->user()->notes()->onlyTrashed()->findOrFail($id);
+        $note->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Catatan berhasil dipulihkan.',
+            'note' => $note,
+        ]);
+    }
+
+    /**
+     * Force Delete Note Permanently
+     */
+    public function forceDelete(Request $request, $id)
+    {
+        $note = $request->user()->notes()->withTrashed()->findOrFail($id);
+        $note->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Catatan berhasil dihapus permanen.',
+        ]);
+    }
+
+    /**
+     * Empty All Trashed Notes
+     */
+    public function emptyTrash(Request $request)
+    {
+        $request->user()->notes()->onlyTrashed()->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Semua catatan di kotak sampah berhasil dihapus permanen.',
         ]);
     }
 }

@@ -64,6 +64,16 @@ class FinanceViewModel(
         initialValue = FinanceUiState()
     )
 
+    init {
+        refresh()
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            financeRepository.refreshTransactions(userId)
+        }
+    }
+
     fun setPeriod(period: TimePeriod) {
         _selectedPeriod.value = period
     }

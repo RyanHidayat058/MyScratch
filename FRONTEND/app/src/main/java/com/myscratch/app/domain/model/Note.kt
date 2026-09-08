@@ -6,6 +6,9 @@ data class Note(
     val folderId: String,
     val title: String,
     val content: String,
+    val isLocked: Boolean = false,
+    val isDeleted: Boolean = false,
+    val deletedAt: Long? = null,
     val updatedAt: Long = System.currentTimeMillis(),
     val createdAt: Long = System.currentTimeMillis()
 )

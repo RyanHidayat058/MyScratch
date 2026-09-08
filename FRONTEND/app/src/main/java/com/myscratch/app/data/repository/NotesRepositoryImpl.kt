@@ -36,6 +36,10 @@ class NotesRepositoryImpl(
         return noteDao.getNotesByFolder(userId, folderId).map { list -> list.map { it.toDomain() } }
     }
 
+    override fun getTrashedNotes(userId: String): Flow<List<Note>> {
+        return noteDao.getTrashedNotes(userId).map { list -> list.map { it.toDomain() } }
+    }
+
     override suspend fun refreshNotesAndFolders(userId: String) = withContext(Dispatchers.IO) {
         try {
             val foldersRes = apiService.getFolders()
@@ -63,6 +67,9 @@ class NotesRepositoryImpl(
                             folderId = n.folderId?.toString() ?: "",
                             title = n.title ?: "Tanpa Judul",
                             content = n.content,
+                            isLocked = n.isLocked,
+                            isDeleted = false,
+                            deletedAt = null,
                             createdAt = System.currentTimeMillis(),
                             updatedAt = System.currentTimeMillis()
                         )
@@ -119,7 +126,8 @@ class NotesRepositoryImpl(
                         title = note.title,
                         content = note.content,
                         folderId = note.folderId,
-                        isPinned = false
+                        isPinned = false,
+                        isLocked = note.isLocked
                     )
                 )
             } catch (_: Exception) {}
@@ -136,7 +144,8 @@ class NotesRepositoryImpl(
                         title = note.title,
                         content = note.content,
                         folderId = note.folderId,
-                        isPinned = false
+                        isPinned = false,
+                        isLocked = note.isLocked
                     )
                 )
             } catch (_: Exception) {}
@@ -145,10 +154,30 @@ class NotesRepositoryImpl(
 
     override suspend fun deleteNote(noteId: String) =
         withContext(Dispatchers.IO) {
-            noteDao.deleteNote(noteId)
+            softDeleteNote(noteId)
+        }
+
+    override suspend fun softDeleteNote(noteId: String) =
+        withContext(Dispatchers.IO) {
+            noteDao.softDeleteNote(noteId)
             try {
                 apiService.deleteNote(noteId)
             } catch (_: Exception) {}
             Unit
+        }
+
+    override suspend fun restoreNote(noteId: String) =
+        withContext(Dispatchers.IO) {
+            noteDao.restoreNote(noteId)
+        }
+
+    override suspend fun permanentlyDeleteNote(noteId: String) =
+        withContext(Dispatchers.IO) {
+            noteDao.permanentlyDeleteNote(noteId)
+        }
+
+    override suspend fun emptyTrash(userId: String) =
+        withContext(Dispatchers.IO) {
+            noteDao.emptyTrash(userId)
         }
 }

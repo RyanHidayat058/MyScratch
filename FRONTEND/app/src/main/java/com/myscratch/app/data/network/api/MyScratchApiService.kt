@@ -6,6 +6,10 @@ import retrofit2.http.*
 
 interface MyScratchApiService {
 
+    // --- APP UPDATE CHECKER ---
+    @GET("app/check-update")
+    suspend fun checkAppUpdate(): Response<AppUpdateDto>
+
     // --- AUTH & OTP ---
     @POST("auth/register-request")
     suspend fun registerRequest(
@@ -115,6 +119,45 @@ interface MyScratchApiService {
 
     @DELETE("notes/{id}")
     suspend fun deleteNote(
+        @Path("id") id: String
+    ): Response<BaseResponseDto>
+
+    @GET("notes/trash")
+    suspend fun getTrashedNotes(): Response<NotesResponseDto>
+
+    @POST("notes/{id}/restore")
+    suspend fun restoreNote(
+        @Path("id") id: String
+    ): Response<NoteMutationResponseDto>
+
+    @DELETE("notes/{id}/force-delete")
+    suspend fun forceDeleteNote(
+        @Path("id") id: String
+    ): Response<BaseResponseDto>
+
+    @DELETE("notes/trash/empty")
+    suspend fun emptyNotesTrash(): Response<BaseResponseDto>
+
+    // --- SECURE VAULT (BRANKAS RAHASIA) ---
+    @GET("vault/items")
+    suspend fun getVaultItems(
+        @Query("category") category: String? = null,
+        @Query("search") search: String? = null
+    ): Response<VaultItemsResponseDto>
+
+    @POST("vault/items")
+    suspend fun createVaultItem(
+        @Body body: VaultItemRequestDto
+    ): Response<VaultItemMutationResponseDto>
+
+    @PUT("vault/items/{id}")
+    suspend fun updateVaultItem(
+        @Path("id") id: String,
+        @Body body: VaultItemRequestDto
+    ): Response<VaultItemMutationResponseDto>
+
+    @DELETE("vault/items/{id}")
+    suspend fun deleteVaultItem(
         @Path("id") id: String
     ): Response<BaseResponseDto>
 }

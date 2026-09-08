@@ -80,6 +80,11 @@ fun FinanceDashboardScreen(
     isTablet: Boolean = false
 ) {
     val uiState by financeViewModel.uiState.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        financeViewModel.refresh()
+    }
+
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Ringkasan, 1: Riwayat Lengkap
     var searchQuery by remember { mutableStateOf("") }
     var historyTypeFilter by remember { mutableIntStateOf(0) } // 0: Semua, 1: Pengeluaran, 2: Pemasukan

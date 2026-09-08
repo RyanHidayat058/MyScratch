@@ -73,4 +73,10 @@ object AppColors {
 
     val azureBg: Color
         @Composable get() = if (LocalThemeState.current.isDark) AzureBgDark else AzureBgLight
+
+    val violet: Color
+        @Composable get() = Color(0xFF8B5CF6)
+
+    val violetBg: Color
+        @Composable get() = if (LocalThemeState.current.isDark) Color(0x268B5CF6) else Color(0x1F8B5CF6)
 }
